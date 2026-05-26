@@ -1,7 +1,7 @@
 
 from pydantic import BaseModel, Field
 
-class Order_Response(BaseModel):
+class OrderResponse(BaseModel):
     order_id:int
     customer_id:int
     #date of mysql datetime format
