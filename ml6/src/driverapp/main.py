@@ -1,4 +1,6 @@
 #rabbitmq connection
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 import pika
 import json
@@ -10,7 +12,7 @@ connection = pika.BlockingConnection(params)
 print("Connected to RabbitMQ successfully!")
 connection.close()
 '''
-app=FastAPI(title="Driver App",description="API for drivers to manage rides",version="1.0")
+
 
 def process_message(ch, method, properties, body):
     print("Received message:", body.decode())
@@ -41,10 +43,19 @@ def rabbitmq_consumer():
     print("Waiting for messages. To exit press CTRL+C")
     channel.start_consuming()
 
-@app.on_event("startup")
-def start_up_event():
+@asynccontextmanager
+async def start_up_event(app: FastAPI):
     #create background thread to consume messages from RabbitMQ
     threading.Thread(target=rabbitmq_consumer, daemon=True).start()
+    print("RabbitMQ consumer thread started.")
+    yield
+    print("Shutting down RabbitMQ consumer thread.")
 
+app=FastAPI(title="Driver App",
+            description="API for drivers to manage rides",version="1.0",
+            lifespan=start_up_event)
 
-
+#check health of the application
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
