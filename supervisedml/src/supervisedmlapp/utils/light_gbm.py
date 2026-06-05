@@ -10,14 +10,8 @@ def train_light_gbm(data_path):
     # Load the dataset
     data = pd.read_csv(data_path)
 
-    #print plan downgrade history and encoded value
-    churn_cat = data['PlanDowngradeHistory'].astype('category')
-    churn_mapping = dict(enumerate(churn_cat.cat.categories))
-    data['Churn'] = churn_cat.cat.codes
-    print("Plan Downgrade History and Encoded Value:")
-    for code, churn in churn_mapping.items():
-        print(f"{churn}: {code}")
-        
+   
+
     # Encode string columns to integers so LightGBM can accept them
     string_cols = data.select_dtypes(include=['object', 'string']).columns
     for col in string_cols:
