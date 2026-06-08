@@ -40,6 +40,24 @@ def pca_analysis():
     print("\nTarget variable (y):")
     print(y[:5])
 
+    # Standardize the features
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    # Apply PCA
+    pca = PCA(n_components=2)  # Reduce to 2 principal components for visualization
+    X_pca = pca.fit_transform(X_scaled) 
+    # Create a DataFrame for the PCA results
+    pca_df = pd.DataFrame(data=X_pca, columns=['Principal Component 1', 'Principal Component 2'])
+    pca_df['QualityClass'] = y  # Add the target variable for coloring
+    # Visualize the PCA results
+    plt.figure(figsize=(10, 6))
+    scatter = plt.scatter(pca_df['Principal Component 1'], pca_df['Principal Component 2'], c=pca_df['QualityClass'], cmap='viridis')    
+    plt.title('PCA of T-Shirt Quality Data')
+    plt.xlabel('Principal Component 1')
+    plt.ylabel('Principal Component 2')
+    plt.colorbar(scatter, label='QualityClass')
+    plt.show()
+
 
 if __name__ == "__main__":
     pca_analysis()
